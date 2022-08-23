@@ -15,11 +15,8 @@ def search_symbol_matches(symbol: str):
             if symbol.lower() in ticker.lower():
                 filtered_list.append(token)
 
-    _write_to_json(
-        criteria=symbol,
-        def_name=search_symbol_matches.__name__,
-        filtered_list=filtered_list
-    )
+    description = '_symbol_match_' + symbol
+    _write_to_json(description, filtered_list)
 
 
 def filter_by_symbol(symbol: str):
@@ -35,11 +32,8 @@ def filter_by_symbol(symbol: str):
             if ticker.lower() == symbol.lower():
                 filtered_list.append(token)
 
-    _write_to_json(
-        criteria=symbol,
-        def_name=filter_by_symbol.__name__,
-        filtered_list=filtered_list
-    )
+    description = '_symbol_' + symbol
+    _write_to_json(description, filtered_list)
 
 
 def filter_by_chain_id(chain_id: int):
@@ -48,12 +42,8 @@ def filter_by_chain_id(chain_id: int):
         chains = json.loads(raw.read())
 
     filtered_list = chains.get(str(chain_id))
-
-    _write_to_json(
-        criteria=chain_id,
-        def_name=filter_by_chain_id.__name__,
-        filtered_list=filtered_list
-    )
+    description = '_chain_id_' + str(chain_id)
+    _write_to_json(description, filtered_list)
 
 
 def filter_by_sources(sources_list: list):
@@ -71,28 +61,12 @@ def filter_by_sources(sources_list: list):
                     filtered_list.append(token)
                     break
 
-    _write_to_json(
-        criteria=sources_list,
-        def_name=filter_by_sources.__name__,
-        filtered_list=filtered_list
-    )
-
-
-def _write_to_json(
-        criteria: Union[str, int, list],
-        def_name: str,
-        filtered_list: list
-):
     description = ''
-    if def_name == 'filter_by_sources':
-        for source in criteria:
-            description += '_' + source
-    elif def_name == 'filter_by_chain_id':
-        description = '_chain_id_' + str(criteria)
-    elif def_name == 'filter_by_symbol':
-        description = '_symbol_' + criteria
-    else:
-        description = '_' + str(criteria)
+    for source in sources_list:
+        description += '_' + source
+    _write_to_json(description, filtered_list)
 
+
+def _write_to_json(description: str, filtered_list: list):
     with open(f'filtered_by{description}.json', 'w') as f:
         f.write(json.dumps(filtered_list, indent=4))
