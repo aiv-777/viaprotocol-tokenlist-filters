@@ -70,8 +70,6 @@ def filter_by_sources(sources_list: list):
                 if source in listed_in:
                     filtered_list.append(token)
                     break
-                else:
-                    continue
 
     _write_to_json(
         criteria=sources_list,
